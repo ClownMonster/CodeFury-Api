@@ -43,14 +43,14 @@ def sign_up():
 def login():
     data = request.json
     try:
-        email = data['email']
+        email = data['email_id']
         contractor = contractors.document(email).get().to_dict()
         print(contractor)
         if contractor == None:
             return {"success":False,"details":"Vendor does not exist"}, 404
         else:
             actualPassword = contractor['password']
-            sentPassword = data['password']
+            sentPassword = data['pass']
             if actualPassword == sentPassword:
                 response =  jsonify({"success":True,"email":contractor['email'],"address":contractor['address'],"name":contractor['username']})
                 return response
@@ -73,6 +73,18 @@ def getAllLabourers():
         return response , 200
     except Exception as e:
         return f"An Error Occured: {e}", 500
+
+@app.route('/getALabourer')
+@cross_origin()
+def specificOrder():
+    labourerId = request.args['labourerId']
+    labourers = db.collection('labourers')
+    try:
+        labourer = labourers.document(labourerId).get().to_dict()
+        response = jsonify(labourer)
+        return response, 200
+    except Exception as e:
+        return f"An Error Occured: {e}"
 
 workDict = {'1':"Plumbing",'2':"Carpenter",'3':"Daily Wage Worker",'4':"House hold worker"}
 
